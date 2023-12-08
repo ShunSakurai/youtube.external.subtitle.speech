@@ -331,7 +331,7 @@
         }
     };
     const Subtitle = /** @class */ (function () {
-        function Subtitle(iframe, subtitles, renderMethod) {
+        function Subtitle(iframe, subtitles, renderMethod, language='en-US') {
             const _this = this;
             if (subtitles === void 0) { subtitles = []; }
             if (renderMethod === void 0) { renderMethod = null; }
@@ -342,14 +342,22 @@
             this.videoId = null;
             this.element = null;
             this.renderMethod = null;
+            this.speechDisabled = true;
+            this.language = language;
             this.state = {
                 text: null,
+                start: null,
+                end: null,
                 isFullscreenActive: null,
                 controlsVisible: true
             };
             this.onTimeChange = function () {
                 const subtitle = getSubtitleFromCache(_this.player.getCurrentTime(), _this.cache);
-                _this.setState({ text: subtitle ? subtitle.text : null });
+                _this.setState({
+                    text: subtitle ? subtitle.text : null,
+                    start: subtitle ? subtitle.start : null,
+                    end: subtitle ? subtitle.end : null
+                });
             };
             this.onControlsHide = function () {
                 _this.setState({ controlsVisible: false });
@@ -413,6 +421,16 @@
         Subtitle.prototype.render = function () {
             this.renderMethod(this.element, this.player, this.state.isFullscreenActive, this.state.text, this.state.controlsVisible);
         };
+        Subtitle.prototype.speak = function (state) {
+            if (this.speechDisabled) return;
+            let utterance = new SpeechSynthesisUtterance(state.text);
+            // Count full-width characters as two half-width characters
+            let cps = state.text.replace(/[^ -~]/g, 'aa').length
+                / (state.end - state.start);
+            utterance.rate = cps > 15 ? 1.25 * cps / 15 : 1.25;
+            utterance.voice = window.speechSynthesis.getVoices().filter(item => item.lang == this.language)[0];
+            window.speechSynthesis.speak(utterance);
+        };
         Subtitle.prototype.isInContainer = function (container) {
             return container.contains(this.element) || container === this.element;
         };
@@ -427,6 +445,7 @@
             }
             this.state = nextState;
             this.render();
+            if ('start' in state) this.speak(this.state);
         };
         Subtitle.prototype.start = function () {
             this.stop();
@@ -440,6 +459,7 @@
             window.clearInterval(this.timeChangeInterval);
             window.clearTimeout(this.controlsHideTimeout);
             this.setState({ controlsVisible: true });
+            window.speechSynthesis.cancel();
         };
         Subtitle.prototype.getCurrentVideoId = function () {
             return this.player.getVideoData().video_id;
