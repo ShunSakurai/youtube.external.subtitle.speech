@@ -19,18 +19,18 @@
     PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
 
-    var __assign = function() {
+    let __assign = function() {
         __assign = Object.assign || function __assign(t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
+            for (let s, i = 1, n = arguments.length; i < n; i++) {
                 s = arguments[i];
-                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+                for (let p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
             }
             return t;
         };
         return __assign.apply(this, arguments);
     };
 
-    var Container = /** @class */ (function () {
+    const Container = /** @class */ (function () {
         function Container() {
             this.window = null;
             this.document = null;
@@ -63,101 +63,101 @@
         };
         return Container;
     }());
-    var DIC = new Container();
+    const DIC = new Container();
 
-    var CSS = {
+    const CSS = {
         ID: 'youtube-external-subtitle-style',
         CLASS: 'youtube-external-subtitle',
         FULLSCREEN: 'fullscreen',
         FULLSCREEN_IGNORE: 'fullscreen-ignore'
     };
-    var iframeApiScriptAdded = function (document) {
-        var scripts = document.getElementsByTagName('script');
-        for (var i = 0; i < scripts.length; i++) {
-            var src = scripts[i].src;
+    const iframeApiScriptAdded = function (document) {
+        const scripts = document.getElementsByTagName('script');
+        for (let i = 0; i < scripts.length; i++) {
+            const src = scripts[i].src;
             if (src && src.indexOf('youtube.com/iframe_api') !== -1) {
                 return true;
             }
         }
         return false;
     };
-    var addIframeApiScript = function (document) {
-        var tag = document.createElement('script');
+    const addIframeApiScript = function (document) {
+        const tag = document.createElement('script');
         tag.src = 'https://www.youtube.com/iframe_api';
-        var firstScriptTag = document.getElementsByTagName('script')[0];
+        const firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     };
-    var grantIframeApiScript = function (document) {
+    const grantIframeApiScript = function (document) {
         if (!iframeApiScriptAdded(document)) {
             addIframeApiScript(document);
         }
     };
-    var iframeApiLoaded = function (window) {
+    const iframeApiLoaded = function (window) {
         return !!(window.YT && window.YT.Player);
     };
-    var waitFor = function (isReady, onComplete) {
+    const waitFor = function (isReady, onComplete) {
         if (isReady()) {
             onComplete();
             return;
         }
-        var interval = setInterval(function () {
+        const interval = setInterval(function () {
             if (isReady()) {
                 clearInterval(interval);
                 onComplete();
             }
         }, 100);
     };
-    var getFullscreenElement = function (document) {
+    const getFullscreenElement = function (document) {
         return document.fullscreenElement ||
             document.webkitFullscreenElement ||
             document.webkitCurrentFullScreenElement ||
             document.mozFullScreenElement ||
             document.msFullscreenElement;
     };
-    var getSubtitles = function (container) {
-        var initService = DIC.getInitService();
+    const getSubtitles = function (container) {
+        const initService = DIC.getInitService();
         return initService.getSubtitles().filter(function (subtitle) { return subtitle.isInContainer(container); });
     };
-    var getFullscreenSubtitle = function (fullscreenElement) {
+    const getFullscreenSubtitle = function (fullscreenElement) {
         if (!fullscreenElement) {
             return null;
         }
         if (fullscreenElement.youtubeExternalSubtitle) {
             return fullscreenElement.youtubeExternalSubtitle;
         }
-        var elements = getSubtitles(fullscreenElement);
+        const elements = getSubtitles(fullscreenElement);
         if (elements.length > 0) {
             return elements[0];
         }
         return null;
     };
-    var fullscreenChangeHandler = function () {
-        var document = DIC.getDocument();
-        var fullscreenElement = getFullscreenElement(document);
-        var isFullscreen = !!fullscreenElement;
-        var fullscreenSubtitle = getFullscreenSubtitle(fullscreenElement);
-        var subtitles = getSubtitles(document);
-        for (var _i = 0, subtitles_1 = subtitles; _i < subtitles_1.length; _i++) {
-            var subtitle = subtitles_1[_i];
+    const fullscreenChangeHandler = function () {
+        const document = DIC.getDocument();
+        const fullscreenElement = getFullscreenElement(document);
+        const isFullscreen = !!fullscreenElement;
+        const fullscreenSubtitle = getFullscreenSubtitle(fullscreenElement);
+        const subtitles = getSubtitles(document);
+        for (let _i = 0, subtitles_1 = subtitles; _i < subtitles_1.length; _i++) {
+            const subtitle = subtitles_1[_i];
             subtitle.setIsFullscreenActive(isFullscreen ? fullscreenSubtitle === subtitle : null);
         }
     };
-    var globalStylesAdded = function (document) {
+    const globalStylesAdded = function (document) {
         return !!document.getElementById(CSS.ID);
     };
-    var addGlobalStyles = function (document) {
-        var style = document.createElement('style');
+    const addGlobalStyles = function (document) {
+        const style = document.createElement('style');
         style.id = CSS.ID;
         style.type = 'text/css';
-        style.innerHTML = "\n    ." + CSS.CLASS + " { position: absolute; display: none; z-index: 0; pointer-events: none; color: #fff; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-weight: normal; font-size: 17px; text-align: center; }\n    ." + CSS.CLASS + " span { background: #000; background: rgba(0, 0, 0, 0.9); padding: 1px 4px; display: inline-block; margin-bottom: 2px; }\n    ." + CSS.CLASS + "." + CSS.FULLSCREEN_IGNORE + " { display: none !important; }\n    ." + CSS.CLASS + "." + CSS.FULLSCREEN + " { z-index: 3000000000; }\n  ";
-        var head = document.getElementsByTagName('head')[0] || document.documentElement;
+        style.innerHTML = '\n    .' + CSS.CLASS + ' { position: absolute; display: none; z-index: 0; pointer-events: none; color: #fff; font-family: Arial, "Helvetica Neue", Helvetica, sans-serif; font-weight: normal; font-size: 17px; text-align: center; }\n    .' + CSS.CLASS + ' span { background: #000; background: rgba(0, 0, 0, 0.9); padding: 1px 4px; display: inline-block; margin-bottom: 2px; }\n    .' + CSS.CLASS + '.' + CSS.FULLSCREEN_IGNORE + ' { display: none !important; }\n    .' + CSS.CLASS + '.' + CSS.FULLSCREEN + ' { z-index: 3000000000; }\n  ';
+        const head = document.getElementsByTagName('head')[0] || document.documentElement;
         head.insertBefore(style, head.firstChild);
         document.addEventListener('fullscreenchange', fullscreenChangeHandler);
         document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
         document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
         document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
     };
-    var InitService = /** @class */ (function () {
+    const InitService = /** @class */ (function () {
         function InitService() {
             this.subtitles = [];
         }
@@ -168,7 +168,7 @@
             this.subtitles.push(subtitle);
         };
         InitService.prototype.removeSubtitle = function (subtitle) {
-            var index = this.subtitles.indexOf(subtitle);
+            const index = this.subtitles.indexOf(subtitle);
             if (index !== -1) {
                 this.subtitles.splice(index, 1);
             }
@@ -178,8 +178,8 @@
                 cb();
                 return;
             }
-            var window = DIC.getWindow();
-            var document = DIC.getDocument();
+            const window = DIC.getWindow();
+            const document = DIC.getDocument();
             waitFor(function () {
                 return iframeApiLoaded(window);
             }, function () {
@@ -189,36 +189,36 @@
             grantIframeApiScript(document);
         };
         InitService.prototype.grantGlobalStyles = function () {
-            var document = DIC.getDocument();
+            const document = DIC.getDocument();
             if (!globalStylesAdded(document)) {
                 addGlobalStyles(document);
             }
         };
         return InitService;
     }());
-    var init = function (window) {
+    const init = function (window) {
         DIC.setWindow(window);
         DIC.setDocument(window.document);
         DIC.setInitService(new InitService());
     };
 
-    var getCacheName = function (seconds) {
+    const getCacheName = function (seconds) {
         return Math.floor(seconds / 10);
     };
-    var getCacheNames = function (start, end) {
-        var cacheNames = [];
-        var endCacheName = getCacheName(end);
-        for (var i = getCacheName(start); i <= endCacheName; i++) {
+    const getCacheNames = function (start, end) {
+        const cacheNames = [];
+        const endCacheName = getCacheName(end);
+        for (let i = getCacheName(start); i <= endCacheName; i++) {
             cacheNames.push(i);
         }
         return cacheNames;
     };
-    var buildCache = function (subtitles) {
-        var cache = {};
-        for (var _i = 0, subtitles_1 = subtitles; _i < subtitles_1.length; _i++) {
-            var subtitle = subtitles_1[_i];
-            for (var _a = 0, _b = getCacheNames(subtitle.start, subtitle.end); _a < _b.length; _a++) {
-                var cacheName = _b[_a];
+    const buildCache = function (subtitles) {
+        const cache = {};
+        for (let _i = 0, subtitles_1 = subtitles; _i < subtitles_1.length; _i++) {
+            const subtitle = subtitles_1[_i];
+            for (let _a = 0, _b = getCacheNames(subtitle.start, subtitle.end); _a < _b.length; _a++) {
+                const cacheName = _b[_a];
                 if (!cache[cacheName]) {
                     cache[cacheName] = [];
                 }
@@ -227,43 +227,43 @@
         }
         return cache;
     };
-    var getSubtitleFromCache = function (seconds, builtCache) {
+    const getSubtitleFromCache = function (seconds, builtCache) {
         if (!builtCache) {
             return null;
         }
-        var cache = builtCache[getCacheName(seconds)];
+        const cache = builtCache[getCacheName(seconds)];
         if (!cache) {
             return null;
         }
-        for (var _i = 0, cache_1 = cache; _i < cache_1.length; _i++) {
-            var subtitle = cache_1[_i];
+        for (let _i = 0, cache_1 = cache; _i < cache_1.length; _i++) {
+            const subtitle = cache_1[_i];
             if (seconds >= subtitle.start && seconds <= subtitle.end) {
                 return subtitle;
             }
         }
         return null;
     };
-    var addQueryStringParameterToUrl = function (url, qsParameters) {
-        var hashIndex = url.indexOf('#');
-        var hash = '';
+    const addQueryStringParameterToUrl = function (url, qsParameters) {
+        const hashIndex = url.indexOf('#');
+        let hash = '';
         if (hashIndex !== -1) {
             hash = url.substr(hashIndex);
             url = url.substr(0, hashIndex);
         }
-        var qsIndex = url.indexOf('?');
-        var qs = '';
+        const qsIndex = url.indexOf('?');
+        let qs = '';
         if (qsIndex !== -1) {
             qs = url.substr(qsIndex);
             url = url.substr(0, qsIndex);
         }
-        for (var _i = 0, _a = Object.keys(qsParameters); _i < _a.length; _i++) {
-            var qsParameterName = _a[_i];
-            qs += "" + (qs === '' ? '?' : '&') + qsParameterName + "=" + qsParameters[qsParameterName];
+        for (let _i = 0, _a = Object.keys(qsParameters); _i < _a.length; _i++) {
+            const qsParameterName = _a[_i];
+            qs += '' + (qs === '' ? '?' : '&') + qsParameterName + '=' + qsParameters[qsParameterName];
         }
-        return "" + url + qs + hash;
+        return '' + url + qs + hash;
     };
-    var getIframeSrc = function (src) {
-        var newSrc = src;
+    const getIframeSrc = function (src) {
+        let newSrc = src;
         if (newSrc.indexOf('enablejsapi=1') === -1) {
             newSrc = addQueryStringParameterToUrl(newSrc, { enablejsapi: '1' });
         }
@@ -278,34 +278,34 @@
         }
         return newSrc;
     };
-    var createSubtitleElement = function (iframe, subtitle) {
-        var document = DIC.getDocument();
-        var element = document.createElement('div');
+    const createSubtitleElement = function (iframe, subtitle) {
+        const document = DIC.getDocument();
+        const element = document.createElement('div');
         element.youtubeExternalSubtitle = subtitle;
         iframe.parentNode.insertBefore(element, iframe.nextSibling);
         return element;
     };
-    var isStateChanged = function (prevState, nextState) {
-        for (var _i = 0, _a = Object.keys(nextState); _i < _a.length; _i++) {
-            var propertyName = _a[_i];
+    const isStateChanged = function (prevState, nextState) {
+        for (let _i = 0, _a = Object.keys(nextState); _i < _a.length; _i++) {
+            const propertyName = _a[_i];
             if (prevState[propertyName] !== nextState[propertyName]) {
                 return true;
             }
         }
         return false;
     };
-    var renderClassName = function (isFullscreenActive) {
-        var classes = [CSS.CLASS];
+    const renderClassName = function (isFullscreenActive) {
+        const classes = [CSS.CLASS];
         if (isFullscreenActive !== null) {
             classes.push(isFullscreenActive ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
         }
         return classes.join(' ');
     };
-    var renderText = function (text) {
-        return "<span>" + (text === null ? '' : text).replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>') + "</span>";
+    const renderText = function (text) {
+        return '<span>' + (text === null ? '' : text).replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>') + '</span>';
     };
-    var getFrameRect = function (iframe, controlsVisible) {
-        var height = iframe.offsetHeight;
+    const getFrameRect = function (iframe, controlsVisible) {
+        const height = iframe.offsetHeight;
         return {
             x: iframe.offsetLeft - iframe.scrollLeft + iframe.clientLeft,
             y: iframe.offsetTop - iframe.scrollTop + iframe.clientTop,
@@ -314,25 +314,25 @@
             bottomPadding: height < 200 && !controlsVisible ? 20 : 60
         };
     };
-    var renderSubtitle = function (element, player, isFullscreenActive, text, controlsVisible) {
+    const renderSubtitle = function (element, player, isFullscreenActive, text, controlsVisible) {
         element.className = renderClassName(isFullscreenActive);
         element.innerHTML = renderText(text);
         element.style.display = text === null ? '' : 'block';
         if (player) {
-            var frame = getFrameRect(player.getIframe(), controlsVisible);
+            const frame = getFrameRect(player.getIframe(), controlsVisible);
             element.style.visibility = 'hidden';
-            element.style.top = frame.y + "px";
-            element.style.left = frame.x + "px";
-            element.style.maxWidth = frame.width - 20 + "px";
-            element.style.fontSize = frame.height / 260 + "em";
-            element.style.top = frame.y + frame.height - frame.bottomPadding - element.offsetHeight + "px";
-            element.style.left = frame.x + (frame.width - element.offsetWidth) / 2 + "px";
+            element.style.top = frame.y + 'px';
+            element.style.left = frame.x + 'px';
+            element.style.maxWidth = frame.width - 20 + 'px';
+            element.style.fontSize = frame.height / 260 + 'em';
+            element.style.top = frame.y + frame.height - frame.bottomPadding - element.offsetHeight + 'px';
+            element.style.left = frame.x + (frame.width - element.offsetWidth) / 2 + 'px';
             element.style.visibility = '';
         }
     };
-    var Subtitle = /** @class */ (function () {
+    const Subtitle = /** @class */ (function () {
         function Subtitle(iframe, subtitles, renderMethod) {
-            var _this = this;
+            const _this = this;
             if (subtitles === void 0) { subtitles = []; }
             if (renderMethod === void 0) { renderMethod = null; }
             this.cache = null;
@@ -348,7 +348,7 @@
                 controlsVisible: true
             };
             this.onTimeChange = function () {
-                var subtitle = getSubtitleFromCache(_this.player.getCurrentTime(), _this.cache);
+                const subtitle = getSubtitleFromCache(_this.player.getCurrentTime(), _this.cache);
                 _this.setState({ text: subtitle ? subtitle.text : null });
             };
             this.onControlsHide = function () {
@@ -361,7 +361,7 @@
                 if (_this.videoId !== _this.getCurrentVideoId()) {
                     return;
                 }
-                var YT = DIC.getYT();
+                const YT = DIC.getYT();
                 if (e.data === YT.PlayerState.PLAYING) {
                     _this.start();
                 }
@@ -377,19 +377,19 @@
                 throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
             }
             iframe.youtubeExternalSubtitle = this;
-            var src = getIframeSrc(iframe.src);
+            const src = getIframeSrc(iframe.src);
             if (iframe.src !== src) {
                 iframe.src = src;
             }
             this.load(subtitles);
             this.element = createSubtitleElement(iframe, this);
             this.renderMethod = renderMethod === null ? renderSubtitle : renderMethod;
-            var initService = DIC.getInitService();
+            const initService = DIC.getInitService();
             initService.grantGlobalStyles();
             initService.addSubtitle(this);
             this.render();
             initService.grantIframeApi(function () {
-                var YT = DIC.getYT();
+                const YT = DIC.getYT();
                 _this.player = new YT.Player(iframe);
                 _this.player.addEventListener('onReady', _this.onPlayerReady);
                 _this.player.addEventListener('onStateChange', _this.onPlayerStateChange);
@@ -407,7 +407,7 @@
             this.player.getIframe().youtubeExternalSubtitle = null;
             this.player.removeEventListener('onReady', this.onPlayerReady);
             this.player.removeEventListener('onStateChange', this.onPlayerStateChange);
-            var initService = DIC.getInitService();
+            const initService = DIC.getInitService();
             initService.removeSubtitle(this);
         };
         Subtitle.prototype.render = function () {
@@ -420,8 +420,8 @@
             return this.player;
         };
         Subtitle.prototype.setState = function (state) {
-            var prevState = this.state;
-            var nextState = __assign(__assign({}, prevState), state);
+            const prevState = this.state;
+            const nextState = __assign(__assign({}, prevState), state);
             if (!isStateChanged(prevState, nextState)) {
                 return;
             }
@@ -430,13 +430,13 @@
         };
         Subtitle.prototype.start = function () {
             this.stop();
-            var window = DIC.getWindow();
+            const window = DIC.getWindow();
             this.timeChangeInterval = window.setInterval(this.onTimeChange, 500);
             this.controlsHideTimeout = window.setTimeout(this.onControlsHide, 3000);
             this.onTimeChange();
         };
         Subtitle.prototype.stop = function () {
-            var window = DIC.getWindow();
+            const window = DIC.getWindow();
             window.clearInterval(this.timeChangeInterval);
             window.clearTimeout(this.controlsHideTimeout);
             this.setState({ controlsVisible: true });
@@ -448,7 +448,7 @@
     }());
 
     init(window);
-    var youtube_external_subtitle = { Subtitle: Subtitle };
+    const youtube_external_subtitle = { Subtitle: Subtitle };
 
     return youtube_external_subtitle;
 
