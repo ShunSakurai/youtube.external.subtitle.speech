@@ -331,7 +331,7 @@
         }
     };
     const Subtitle = /** @class */ (function () {
-        function Subtitle(iframe, subtitles, renderMethod, language='en-US') {
+        function Subtitle(iframe, subtitles, renderMethod, language='en-US', rate=1.25) {
             const _this = this;
             if (subtitles === void 0) { subtitles = []; }
             if (renderMethod === void 0) { renderMethod = null; }
@@ -343,7 +343,8 @@
             this.element = null;
             this.renderMethod = null;
             this.speechDisabled = true;
-            this.language = language;
+            this.speechLanguage = language;
+            this.speechRate = rate;
             this.state = {
                 text: null,
                 start: null,
@@ -427,8 +428,8 @@
             // Count full-width characters as two half-width characters
             let cps = state.text.replace(/[^ -~]/g, 'aa').length
                 / (state.end - state.start);
-            utterance.rate = cps > 15 ? 1.25 * cps / 15 : 1.25;
-            utterance.voice = window.speechSynthesis.getVoices().filter(item => item.lang == this.language)[0];
+            utterance.rate = cps > 15 ? this.speechRate * cps / 15 : this.speechRate;
+            utterance.voice = window.speechSynthesis.getVoices().filter(item => item.lang == this.speechLanguage)[0];
             window.speechSynthesis.speak(utterance);
         };
         Subtitle.prototype.isInContainer = function (container) {
